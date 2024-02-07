@@ -1,0 +1,6 @@
+__pycache__
+log/*
+!log/.gitkeep
+results/*
+!results/.gitkeep
+.idea

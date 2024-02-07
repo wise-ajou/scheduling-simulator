@@ -14,7 +14,7 @@ The simulator consists of four main modules: Worker, Fetcher, Dispatcher, and Mo
 ## How to execute
 
 ```commandline
-pip3 isntall -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ### Execution example

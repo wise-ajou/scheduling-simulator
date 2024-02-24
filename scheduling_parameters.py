@@ -1,4 +1,4 @@
-from timer import cur_time
+from utils import cur_time
 
 
 class SchedulingParameters:
@@ -10,14 +10,19 @@ class SchedulingParameters:
             cls.instance = super(SchedulingParameters, cls).__new__(cls)
         return cls.instance
 
-    def __init__(self, scheduling_algorithm, flush_period, cluster, queue_manager, time_unit):
+    def __init__(self, scheduling_policy, flush_period, host_configure_list, queue_manager, time_unit):
         if self.is_initiated is False:
-            self.scheduling_algorithm = scheduling_algorithm
+            self.scheduling_policy = scheduling_policy
             self.flush_period = flush_period
-            self.cluster = cluster
+            self.host_configure_list = host_configure_list
             self.queue_manager = queue_manager
             self.time_unit = time_unit
-            self.simulation_start_time = cur_time(self.time_unit)
+
+            self.is_mid_flush = False
+            self.is_mid_checked = False
+            self.ou_queue = []
+            self.period_queue = [self.flush_period, self.flush_period]
+            self.simulation_start_time = cur_time(time_unit)
 
             self.is_initiated = True
         else:

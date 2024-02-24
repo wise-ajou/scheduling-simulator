@@ -65,3 +65,18 @@ class Cluster:
             for line in lines[2:]:
                 line = [int(e) for e in line.split(' ')]
                 self.hosts.append(Host(*line))
+
+
+def get_host_configure_list_by_deep_copy(host_configure_list):
+    host_configure_list_copy = []
+
+    for i in range(len(host_configure_list)):
+        host_configure_list_copy.append([])
+
+        for j in range(len(host_configure_list[i])):
+            original_host = host_configure_list[i][j]
+            copied_host = Host(original_host.host_type, original_host.queue_type, original_host.num_cores,
+                               original_host.avail_num_cores)
+            host_configure_list_copy[i].append(copied_host)
+
+    return host_configure_list_copy

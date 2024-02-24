@@ -31,11 +31,3 @@ class JobLog:
             for line in lines:
                 line = [int(e) for e in line.split(' ')]
                 self.jobs.append(Job(*line))
-
-
-#job_log = JobLog('./log/2nd_log_10000_scale_sec')
-
-#for job in job_log.jobs[:5]:
-    #print(job)
-#for job in job_log.jobs[-5:]:
-    #print(job)

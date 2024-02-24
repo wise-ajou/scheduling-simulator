@@ -1,11 +1,11 @@
 from scheduling_parameters import SchedulingParameters
-from timer import cur_time
+from utils import cur_time
 
 
 class Scheduler:
     def __init__(self):
         self.scheduling_parameters = SchedulingParameters.get_scheduling_parameters()
-        self.start_time = cur_time(self.scheduling_parameters.time_unit)
+        self.time_unit = self.scheduling_parameters.time_unit
         self.fin_job_num = 0
 
     def run_fetcher(self):
@@ -20,7 +20,6 @@ class Scheduler:
 
     def run_dispatcher(self, host_configure_list, queue_type):
         queue_manager = self.scheduling_parameters.queue_manager
-        time_unit = self.scheduling_parameters.time_unit
         temp_waiting_job_queue = []
         waiting_job_queue = queue_manager.get_waiting_job_queues()[queue_type]
 
@@ -32,7 +31,7 @@ class Scheduler:
                 if host_configure_list[queue_type][i].avail_num_cores >= req_core:
                     host_configure_list[queue_type][i].avail_num_cores -= req_core
                     job.alloc_host = i
-                    job.execute_start_time = cur_time(time_unit)
+                    job.execute_start_time = cur_time(self.time_unit)
                     # waiting time 계산
                     job.waiting_time = job.execute_start_time - job.submitted_time
 
@@ -53,13 +52,12 @@ class Scheduler:
         self.release_resource(host_configure_list, queue_type)
 
     def execute_job(self, queue_type):
-        time_unit = self.scheduling_parameters.time_unit
         executing_job_queue = self.scheduling_parameters.queue_manager.get_executing_job_queues()[queue_type]
         finished_job_queue = self.scheduling_parameters.queue_manager.get_finished_job_queues()[queue_type]
         temp_executing_job_queue = []
 
         for job in executing_job_queue:
-            cur = cur_time(time_unit)
+            cur = cur_time(self.time_unit)
             cur_runtime = cur - job.execute_start_time
             is_execution_finished = True if (cur_runtime >= job.runtime) else False
 

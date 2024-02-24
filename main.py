@@ -1,29 +1,16 @@
 from cluster import Cluster
 from job import JobLog
 from queue_manager import QueueManager
+from schedule.flush_manager import FlushManager
+from schedule.scheduling_manager import SchedulingManager
 from scheduling_parameters import SchedulingParameters
-from worker import Worker
-from scheduler import Scheduler
+from utils import parse_args, sleep
+from schedule.worker import Worker
+from schedule.scheduler import Scheduler
 from monitor import run_monitor
 from queue import Queue
 
 import threading
-import time
-import argparse
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cluster", type=str, default="cluster")
-    parser.add_argument("--job_log", type=str)
-    parser.add_argument("--result", type=str)
-    parser.add_argument("--scheduling_algorithm", type=str, default="fcfs")
-    parser.add_argument("--initial_flush_period", type=int, default="2000")
-    parser.add_argument("--time_unit", type=str, default="ms")
-    args = parser.parse_args()
-
-    return args
-
 
 if __name__ == '__main__':
     args = parse_args()
@@ -36,8 +23,7 @@ if __name__ == '__main__':
 
     # cluster: Variable about which host the queue has assigned
     cluster = Cluster(cluster_file_path)
-
-    # each queue가 어떤 호스트를 가지고 있는지에 대한 정보
+    # represents which hosts each queue contains (2-d)
     host_configure_list = [[] for i in range(cluster.num_queue_types)]
 
     for host in cluster.hosts:
@@ -57,13 +43,15 @@ if __name__ == '__main__':
         args.time_unit
     )
 
-    worker = Worker()
+    scheduling_manager = SchedulingManager()
+    flush_manager = FlushManager(scheduling_manager)
+    worker = Worker(scheduling_manager, flush_manager)
     scheduler = Scheduler()
 
     stop_event = threading.Event()
     monitor_thread = threading.Thread(
         target=run_monitor,
-        args=(cluster, host_configure_list, result_file_path, stop_event)
+        args=(cluster, host_configure_list, result_file_path, stop_event, args.monitoring_period, args.time_unit)
     )
 
     monitor_thread.start()
@@ -75,7 +63,7 @@ if __name__ == '__main__':
         for queue_type in range(cluster.num_queue_types):
             scheduler.run_dispatcher(host_configure_list, queue_type)
 
-    time.sleep(3)
+    sleep(args.monitoring_period, args.time_unit)
     stop_event.set()
     monitor_thread.join()
 

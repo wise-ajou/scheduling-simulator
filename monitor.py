@@ -1,7 +1,7 @@
-import time
+from utils import sleep
 
 
-def run_monitor(cluster, topo, result_file_path, stop_event):
+def run_monitor(cluster, topo, result_file_path, stop_event, monitoring_period, time_unit):
     with open(result_file_path, 'w') as file:
         pass
 
@@ -9,9 +9,7 @@ def run_monitor(cluster, topo, result_file_path, stop_event):
     num_queue = cluster.num_queue_types
     num_core = cluster.num_total_cores
     tot_core = [0 for i in range(num_host)]
-    util_core = [0 for i in range(num_host)]
     tot_queue = [0 for i in range(num_queue)]
-    util_queue = [0 for i in range(num_queue)]
 
     iteration = 0
 
@@ -20,8 +18,7 @@ def run_monitor(cluster, topo, result_file_path, stop_event):
         tot_queue[cluster.hosts[i].queue_type] += cluster.hosts[i].num_cores
 
     while not stop_event.is_set():
-        time.sleep(3)
-        ovr_core = 0
+        sleep(monitoring_period, time_unit)
         printer = ''
 
         util_core = [0 for i in range(num_host)]
@@ -47,11 +44,11 @@ def run_monitor(cluster, topo, result_file_path, stop_event):
 
         printer += '\nutil_core : '
         for i in range(num_host):
-            printer += f"{util_core[i]}({tot_core[i] - util_core[i]}) "
+            printer += f"{util_core[i]} "
 
         printer += '\nutil_queue : '
         for i in range(num_queue):
-            printer += f"{util_queue[i]}({tot_queue[i] - util_queue[i]}) "
+            printer += f"{util_queue[i]} "
 
         printer += "\nHost:   "
         for i in range(num_host):

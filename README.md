@@ -19,8 +19,24 @@ pip3 install -r requirements.txt
 
 ### Execution example
 
+time unit - ms
+
 ```commandline
-python3 main.py --cluster cluster --job_log log_5th --result log_5th_result --scheduling_algorithm fcfs --initial_flush_period 2000 --time_unit ms 
+python3 main.py --cluster cluster --job_log log_5th_ms --result log_5th_ms_result --scheduling_algorithm fcfs --initial_flush_period 2000 --monitoring_period 3000 --time_unit ms
+```
+
+```commandline
+python3 main.py --cluster cluster --job_log log_4th_ms --result log_4th_ms_result --scheduling_algorithm fcfs --initial_flush_period 2000 --monitoring_period 3000 --time_unit ms
+```
+
+time unit - s
+
+```commandline
+python3 main.py --cluster cluster --job_log log_2nd_sec_scale_down_10000 --result log_2nd_sec_scale_down_10000_result --scheduling_algorithm fcfs --initial_flush_period 2 --monitoring_period 3 --time_unit s
+```
+
+```commandline
+python3 main.py --cluster cluster --job_log log_1st_sec_scale_down_10000 --result log_1st_sec_scale_down_10000_result --scheduling_algorithm fcfs --initial_flush_period 2 --monitoring_period 3 --time_unit s
 ```
 
 ### Parameters
@@ -31,8 +47,10 @@ python3 main.py --cluster cluster --job_log log_5th --result log_5th_result --sc
 * result
   * Name of the result file
 * scheduling_algorithm
-  * Type of the scheduling algorithm ex) fcfs
+  * Type of the scheduling algorithm ex) fcfs, sdc
 * initial_flush_period
   * Initially set flush period (※ set to the same unit as time_unit)
+* monitoring_period 
+  * Period for recording resource usage of the cluster (※ set to the same unit as time_unit)
 * time_unit
   * Time unit ex) s, ms
